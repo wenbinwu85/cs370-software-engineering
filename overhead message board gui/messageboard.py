@@ -84,7 +84,6 @@ class MessageBoard(wx.Frame):
                 target_text_ctrl.SetStyle(i, i + 1, wx.TextAttr('YELLOW', 'BLACK'))
 
 
-
 if __name__ == '__main__':
     app = wx.App()
     gui = MessageBoard(None, title='Overhead Message Board').Show()
