@@ -4,7 +4,6 @@ GUI classes
 Written by Wenbin Wu
 """
 
-
 import math
 import shelve
 import wx

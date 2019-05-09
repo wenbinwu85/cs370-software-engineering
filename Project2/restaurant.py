@@ -4,7 +4,6 @@ This module contains classes for building a restaurant object
 Written by Wenbin Wu
 """
 
-
 from dataclasses import dataclass
 
 

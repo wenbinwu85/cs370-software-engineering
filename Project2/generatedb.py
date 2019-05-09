@@ -1,13 +1,12 @@
 """
 This module generates the initial database file.
 
-Address for each restaurant location is randomly generated,
+The address for each restaurant location is randomly generated,
 therefore each run of this module will create a slightly
 different data set for the database.
 
 Written by Wenbin Wu
 """
-
 
 import shelve
 import random
