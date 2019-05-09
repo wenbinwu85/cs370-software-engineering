@@ -1,0 +1,3 @@
+['Chips', '$3.99']
+['Fried Chicken Wings', '$7.99']
+['Garlic Bread', '$5.99']

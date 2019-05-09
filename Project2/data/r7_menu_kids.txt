@@ -1,0 +1,4 @@
+['Happyburger', 'Burger only $3.99    Meal $4.99']
+['Ittybitty Nuggets', '6pc $3.99   10pc $4.99']
+['Vanilla Ice Cream', '1 Scoop $2.99   2 Scoops $3.99']
+['Chocolate Ice Cream', '1 Scoop $2.99   2 Scoops $3.99']

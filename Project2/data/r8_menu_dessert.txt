@@ -1,0 +1,2 @@
+['Diner Special Milk Shake', 'Medium $3.99   Large $4.99']
+['Family Recipe Cheesecake', '$6.99']

@@ -1,0 +1,5 @@
+['2 Eggs', 'With Fries $2.99   Eggs only $1.99']
+['French Toasts', '$2']
+['Homemade Fries', '$2.99']
+['Sizzling Bacon With Eggs', '$7.99']
+['Egg Platter', '$6.99']

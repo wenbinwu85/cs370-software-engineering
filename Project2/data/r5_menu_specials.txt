@@ -1,0 +1,3 @@
+['Fried Rice', 'Beef, Pork or Chicken   $6.99']
+['Lo Mein', 'Beef, Shrimp or Veggitables   $6.99']
+['Soup', 'Egg Drop or Wonton   $6.99']

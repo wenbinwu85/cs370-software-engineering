@@ -1,0 +1,6 @@
+['Teryaki Calamari', '$7.99']
+['Premium Caesar Salad', '$9.99']
+['Spicy Chicken Skillet', '$12.99']
+['Super Spaghetti & Meatballs', '$10.99']
+['Bourbon Pork Chop', '$15']
+['Evergreen Special Burger', 'Burger Only $9.99   Combo $13.99']

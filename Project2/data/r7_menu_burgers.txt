@@ -1,0 +1,8 @@
+['American Burger', 'Burger Only $4.99   Combo $7.99']
+['Crispy Grilled Chicken Sandwich', 'Sandwich Only $4.5   Combo $7.5']
+['Juicy Beef Burger', 'Burger Only $5.5   Combo $8.5']
+['Cheese Burger', 'Burger Only $99   combo $.99']
+['Grilled Chicken Strips', '4pc $4.99   6pc $6.99']
+['Cajun Jumbo Shrimps', '4pc $9.99   6pc $12.99']
+['Homemade Fries', 'Medium $1.99   Large $2.99']
+['Soft Drink', 'Medium $1.99   Large $2.99']
