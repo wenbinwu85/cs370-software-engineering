@@ -15,7 +15,7 @@ with shelve.open('restaurants') as db:
         if not restaurant.address:
             del db[name]
             continue
-        print(f'#{num}  name: {name}  |  cusine: {restaurant.cusine}  |  address: {restaurant.address}')
+        print(f'#{num}  name: {name}  |  cuisine: {restaurant.cuisine}  |  address: {restaurant.address}')
         for day, hours in restaurant.hours.items():
             print(f'\t{day},  {hours}')
         print('\t---------------------')

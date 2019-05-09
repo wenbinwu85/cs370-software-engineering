@@ -83,7 +83,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         # ----- restaurant list container -----
         self.restaurant_list = wx.ListCtrl(self.panel, size=(780, 250), style=wx.LC_REPORT)
         self.restaurant_list.InsertColumn(0, 'Name', width=200)
-        self.restaurant_list.InsertColumn(1, 'Cusine', width=120)
+        self.restaurant_list.InsertColumn(1, 'Cuisine', width=120)
         self.restaurant_list.InsertColumn(2, 'Address', width=60)
         self.restaurant_list.InsertColumn(3, 'Menus', width=280)
         self.restaurant_list.InsertColumn(4, 'Distance', width=60)
@@ -116,7 +116,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
                 for address in restaurant.address:
                     menu_titles = [menu.title for menu in restaurant.menus]
                     menu_titles = ' | '.join(menu_titles)
-                    row = [name, restaurant.cusine, address, menu_titles, '']
+                    row = [name, restaurant.cuisine, address, menu_titles, '']
                     index = len(self.itemDataMap)
                     self.itemDataMap[index] = row
         return None
@@ -286,7 +286,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
     def admin_login(self):
         """Enable the admin functions"""
         self.SetTitle('Restaurants Administrator GUI')
-        self.SetStatusText('Successfully logged in. Administrator privilages granted.')
+        self.SetStatusText('Successfully logged in. Administrator functions enabled.')
 
         # ----- unlock and display the admin functions -----
         self.admin_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='Administrator Funcitons')
@@ -397,12 +397,12 @@ class EditorGUI(wx.Dialog):
         name_sizer.Add(name_label, 0, wx.ALL | wx.EXPAND, 5)
         name_sizer.Add(self.name_field, 0, wx.ALL | wx.EXPAND, 5)
 
-        # ----- cusine type container -----
-        cusine_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        cusine_label = wx.StaticText(self, 0, label='Cusine:')
-        self.cusine_field = wx.TextCtrl(self, 0, size=(265, -1))
-        cusine_sizer.Add(cusine_label, 0, wx.ALL | wx.EXPAND, 5)
-        cusine_sizer.Add(self.cusine_field, 0, wx.ALL | wx.EXPAND, 5)
+        # ----- cuisine type container -----
+        cuisine_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        cuisine_label = wx.StaticText(self, 0, label='Cuisine:')
+        self.cuisine_field = wx.TextCtrl(self, 0, size=(265, -1))
+        cuisine_sizer.Add(cuisine_label, 0, wx.ALL | wx.EXPAND, 5)
+        cuisine_sizer.Add(self.cuisine_field, 0, wx.ALL | wx.EXPAND, 5)
 
         # ----- franchise choice container -----
         franchise_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -577,7 +577,7 @@ class EditorGUI(wx.Dialog):
         # ----- left container -----
         left_sizer = wx.BoxSizer(wx.VERTICAL)
         left_sizer.Add(name_sizer, 0, wx.ALL | wx.EXPAND, 5)
-        left_sizer.Add(cusine_sizer, 0, wx.ALL | wx.EXPAND, 5)
+        left_sizer.Add(cuisine_sizer, 0, wx.ALL | wx.EXPAND, 5)
         left_sizer.Add(franchise_sizer, 0, wx.ALL | wx.EXPAND, 5)
         left_sizer.Add(address_sizer, 0, wx.ALL | wx.EXPAND, 5)
         left_sizer.Add(hours_sizer, 0, wx.ALL | wx.EXPAND, 5)
@@ -749,8 +749,8 @@ class EditorGUI(wx.Dialog):
     def save_button_pressed(self, event):
         """Add a new restaurant to the database or update an exisiting restaurant."""
         restaurant = self.create_restaurant()
-        if not restaurant.name or not restaurant.cusine or not restaurant.address:
-            self.show_error_message('Error. Can not save restaurant with no name, cusine type or an address.')
+        if not restaurant.name or not restaurant.cuisine or not restaurant.address:
+            self.show_error_message('Error. Can not save restaurant with no name, cuisine type or an address.')
             return None
         good_hours = True  # assume the hours is entered correctly
         for val in restaurant.hours.values():  # check for bad hours for each day of the week
@@ -778,7 +778,7 @@ class EditorGUI(wx.Dialog):
     def clear_button_pressed(self, event):
         """clear all ediable data"""
         self.name_field.Clear()
-        self.cusine_field.Clear()
+        self.cuisine_field.Clear()
         self.x_field.Clear()
         self.y_field.Clear()
         self.entered_addresses.Clear()
@@ -866,7 +866,7 @@ class EditorGUI(wx.Dialog):
     def create_restaurant(self):
         """creates an Restaurant object to be saved to the database"""
         name = self.name_field.GetValue()
-        cusine = self.cusine_field.GetValue()
+        cuisine = self.cuisine_field.GetValue()
         franchise = True if self.is_franchise.GetCurrentSelection() else False
         address = self.entered_addresses.GetItems()
         hours = {}
@@ -891,14 +891,14 @@ class EditorGUI(wx.Dialog):
         hours['sunday'] = [
             self.sunday_opening_field.GetValue(), self.sunday_closing_field.GetValue()
             ]
-        return Restaurant(name, cusine, franchise, address, hours, self.temp_menus)
+        return Restaurant(name, cuisine, franchise, address, hours, self.temp_menus)
 
     def populate_form(self):
         """populate the editor with data"""
         with shelve.open(self.database) as db:
             restaurant = db[self.restaurant]
         self.name_field.SetValue(restaurant.name)
-        self.cusine_field.SetValue(restaurant.cusine)
+        self.cuisine_field.SetValue(restaurant.cuisine)
         if restaurant.isfranchise:
             self.is_franchise.SetSelection(1)
         for addr in restaurant.address:

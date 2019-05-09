@@ -31,7 +31,7 @@ def make_menu(menu_title, menu_data):
 
 r1 = Restaurant(
     name="Jenny's Bakery",
-    cusine='Bakery',
+    cuisine='Bakery',
     isfranchise=True,  # franchise can have more than one address
     address=[make_random_address(), make_random_address()],  # list of addresses
     hours={
@@ -48,7 +48,7 @@ r1 = Restaurant(
 
 r3 = Restaurant(
     name='Izza Pizzas',
-    cusine='Pizza',
+    cuisine='Pizza',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -65,7 +65,7 @@ r3 = Restaurant(
 
 r4 = Restaurant(
     name="Ben's Grill",
-    cusine='Steakhouse',
+    cuisine='Steakhouse',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -85,7 +85,7 @@ r4 = Restaurant(
 
 r5 = Restaurant(
     name='Fiery Wok',
-    cusine='Chinese',
+    cuisine='Chinese',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -105,7 +105,7 @@ r5 = Restaurant(
 
 r6 = Restaurant(
     name='Yummy Curry House',
-    cusine='Indian',
+    cuisine='Indian',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -122,7 +122,7 @@ r6 = Restaurant(
 
 r7 = Restaurant(
     name='Flushing Burgers',
-    cusine='Fast Food',
+    cuisine='Fast Food',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -142,7 +142,7 @@ r7 = Restaurant(
 
 r8 = Restaurant(
     name='Evergreen Diner',
-    cusine='Diner',
+    cuisine='Diner',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -163,7 +163,7 @@ r8 = Restaurant(
 
 r9 = Restaurant(
     name="V's N F's",
-    cusine='Salads',
+    cuisine='Salads',
     isfranchise=False,
     address=[make_random_address()],
     hours={
@@ -180,7 +180,7 @@ r9 = Restaurant(
 
 r10 = Restaurant(
     name='The Drunken Pirates',
-    cusine='Seafood & Bar',
+    cuisine='Seafood & Bar',
     isfranchise=False,
     address=[make_random_address()],
     hours={

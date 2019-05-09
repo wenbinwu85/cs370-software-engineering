@@ -20,7 +20,7 @@ class Menu:
 @dataclass
 class Restaurant:
     name : str
-    cusine : str
+    cuisine : str
     isfranchise : bool
     address : list  # list of address string: 'x, y'
     hours : dict  # key: day, value: [open hour, closing hour]
@@ -32,5 +32,5 @@ class Restaurant:
         return None
 
     def get_info(self):
-        info = (self.name, self.cusine, self.address, self.hours, self.menus)
+        info = (self.name, self.cuisine, self.address, self.hours, self.menus)
         return info
