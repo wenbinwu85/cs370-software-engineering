@@ -1,13 +1,11 @@
 """
-This module should run prior to running the main program to 
-generate the database file.
+This module generates the initial database file.
 
 Address for each restaurant location is randomly generated,
-therefore each run of this module will create a slightly 
+therefore each run of this module will create a slightly
 different data set for the database.
 
 Written by Wenbin Wu
-
 """
 
 
@@ -158,7 +156,7 @@ r8 = Restaurant(
         'sunday': ['0:00AM', '11:59PM']
         },
     menus=[
-        make_menu('Breakfast', 'r8_menu_breakfast.txt'), 
+        make_menu('Breakfast', 'r8_menu_breakfast.txt'),
         make_menu('Lunch / Dinner', 'r8_menu_lunch_dinner.txt'),
         make_menu('Desserts', 'r8_menu_dessert.txt')
         ]
@@ -200,12 +198,10 @@ r10 = Restaurant(
 
 restaurants = [r1, r3, r4, r5, r6, r7, r8, r9, r10]
 
-# save data to database 
+# save data to database
 with shelve.open('restaurants', writeback=True) as db:
     for r in restaurants:
         db[r.name] = r
 
-
 if __name__ == '__main__':
     print('done!')
-    

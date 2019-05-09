@@ -1,3 +1,9 @@
+"""
+main program file
+
+Written by Wenbin Wu
+"""
+
 import shelve
 import wx
 import wx.adv

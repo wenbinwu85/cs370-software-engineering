@@ -1,9 +1,17 @@
+"""
+GUI classes
+
+Written by Wenbin Wu
+"""
+
+
 import math
 import shelve
 import wx
 import wx.lib.intctrl
 import wx.lib.mixins.listctrl as listmixins
 from restaurant import *
+
 
 class LoginDialog(wx.Dialog):
     def __init__(self, *args, **kw):
@@ -64,7 +72,9 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.search_field.ShowCancelButton(True)
         self.search_field.ShowSearchButton(True)
         self.search_field.Bind(wx.EVT_TEXT, self.search_restaurant)
-        self.location_label = wx.StaticText(self.panel, label='Current Location:  Not Set', size=(200, -1))
+        self.location_label = wx.StaticText(
+            self.panel, label='Current Location:  Not Set', size=(200, -1)
+            )
         self.set_location_button = wx.Button(self.panel, label='Set Location')
         self.set_location_button.Bind(wx.EVT_BUTTON, self.set_location_button_pressed)
         search_sizer.Add(self.search_field, 0, wx.ALL | wx.CENTER, 5)
@@ -136,7 +146,9 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
     def search_restaurant(self, event):
         """filter list of restaurants by search text"""
         filter = self.search_field.GetValue()
-        results = {index:data for index, data in self.itemDataMap.items() if filter.lower() in data[0].lower()}
+        results = {
+            index: data for index, data in self.itemDataMap.items() if filter.lower() in data[0].lower()
+            }
         self.populate_data(results)
         return None
 
@@ -217,10 +229,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
     def add_restaurant(self, event):
         """display the editor gui to add a new restaurant"""
         add_dialog = EditorGUI(
-            self,
-            self.database,
-            datamap=self.itemDataMap,
-            title='Add Restaurant'
+            self, self.database, datamap=self.itemDataMap, title='Add Restaurant'
             )
         add_dialog.CenterOnParent()
         add_dialog.ShowWindowModal()
@@ -234,11 +243,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         item = self.restaurant_list.GetItem(index)
         restaurant = item.GetText()
         edit_dialog = EditorGUI(
-            self,
-            self.database,
-            restaurant,
-            datamap=self.itemDataMap,
-            title='Edit Restaurant'
+            self, self.database, restaurant, datamap=self.itemDataMap, title='Edit Restaurant'
             )
         edit_dialog.CenterOnParent()
         edit_dialog.ShowWindowModal()
@@ -268,7 +273,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def admin_logout(self, event):
-        """logout of admin account"""
+        """logout of admin account and disable the admin functions"""
         self.SetTitle('Restaurants Customer GUI')
         self.SetStatusText('Successfully logged out. Currently in customer mode.')
 
@@ -280,6 +285,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def admin_login(self):
+        """Enable the admin functions"""
         self.SetTitle('Restaurants Administrator GUI')
         self.SetStatusText('Successfully logged in. Administrator privilages granted.')
 
@@ -304,6 +310,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.panel.Layout()
         self.SetSize((780, 460))
         return None
+
 
 class RestaurantGUI(wx.Dialog):
     def __init__(self, parent, restaurant, database=None):
@@ -614,7 +621,9 @@ class EditorGUI(wx.Dialog):
             new_address = f'{x}, {y}'
             address_is_occupied = self.occupied_addresses.intersection([new_address])
             if address_is_occupied:
-                self.show_error_message(f'Can not use address {new_address} for this restaurant. Already occupied.')
+                self.show_error_message(
+                    f'Can not use address {new_address} for this restaurant. Already occupied.'
+                    )
                 return None
             self.entered_addresses.Append(new_address)
             self.occupied_addresses.add(new_address)
@@ -862,13 +871,27 @@ class EditorGUI(wx.Dialog):
         franchise = True if self.is_franchise.GetCurrentSelection() else False
         address = self.entered_addresses.GetItems()
         hours = {}
-        hours['monday'] = [self.monday_opening_field.GetValue(), self.monday_closing_field.GetValue()]
-        hours['tuesday'] = [self.tuesday_opening_field.GetValue(), self.tuesday_closing_field.GetValue()]
-        hours['wednesday'] = [self.wednesday_opening_field.GetValue(), self.wednesday_closing_field.GetValue()]
-        hours['thursday'] = [self.thursday_opening_field.GetValue(), self.thursday_closing_field.GetValue()]
-        hours['friday'] = [self.friday_opening_field.GetValue(), self.friday_closing_field.GetValue()]
-        hours['saturday'] = [self.saturday_opening_field.GetValue(), self.saturday_closing_field.GetValue()]
-        hours['sunday'] = [self.sunday_opening_field.GetValue(), self.sunday_closing_field.GetValue()]
+        hours['monday'] = [
+            self.monday_opening_field.GetValue(), self.monday_closing_field.GetValue()
+            ]
+        hours['tuesday'] = [
+            self.tuesday_opening_field.GetValue(), self.tuesday_closing_field.GetValue()
+            ]
+        hours['wednesday'] = [
+            self.wednesday_opening_field.GetValue(), self.wednesday_closing_field.GetValue()
+            ]
+        hours['thursday'] = [
+            self.thursday_opening_field.GetValue(), self.thursday_closing_field.GetValue()
+            ]
+        hours['friday'] = [
+            self.friday_opening_field.GetValue(), self.friday_closing_field.GetValue()
+            ]
+        hours['saturday'] = [
+            self.saturday_opening_field.GetValue(), self.saturday_closing_field.GetValue()
+            ]
+        hours['sunday'] = [
+            self.sunday_opening_field.GetValue(), self.sunday_closing_field.GetValue()
+            ]
         return Restaurant(name, cusine, franchise, address, hours, self.temp_menus)
 
     def populate_form(self):

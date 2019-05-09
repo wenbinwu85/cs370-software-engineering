@@ -1,8 +1,7 @@
 """
-This module contains classes for building a resturant object
+This module contains classes for building a restaurant object
 
 Written by Wenbin Wu
-
 """
 
 
