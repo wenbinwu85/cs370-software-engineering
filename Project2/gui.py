@@ -5,6 +5,42 @@ import wx.lib.intctrl
 import wx.lib.mixins.listctrl as listmixins
 from restaurant import *
 
+class LoginDialog(wx.Dialog):
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+
+        # ----- username -----
+        username_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        username_label = wx.StaticText(self, -1, label='Username:')
+        self.username_field = wx.TextCtrl(self)
+        username_sizer.Add(username_label, 0, wx.ALL | wx.CENTER, 5)
+        username_sizer.Add(self.username_field, 0, wx.ALL, 5)
+
+        # ----- password -----
+        password_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        password_label = wx.StaticText(self, -1, label='Password:')
+        self.password_field = wx.TextCtrl(self, style=wx.TE_PASSWORD)
+        password_sizer.Add(password_label, 0, wx.ALL | wx.CENTER, 5)
+        password_sizer.Add(self.password_field, 0, wx.ALL, 5)
+
+        # ----- buttons -----
+        button_sizer = wx.StdDialogButtonSizer()
+        login_button = wx.Button(self, wx.ID_OK, label='Login')
+        login_button.SetDefault()
+        cancel_button = wx.Button(self, wx.ID_CANCEL)
+        button_sizer.AddButton(login_button)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
+
+        # ----- main container -----
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        main_sizer.Add(username_sizer, 0, wx.ALL | wx.CENTER, 5)
+        main_sizer.Add(password_sizer, 0, wx.ALL | wx.CENTER, 5)
+        main_sizer.Add(button_sizer, 0, wx.ALL | wx.CENTER, 5)
+        main_sizer.Fit(self)
+        self.SetSizer(main_sizer)
+        self.CenterOnParent()
+
 
 class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
     """client GUI interface"""
@@ -130,13 +166,17 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
 
         x_sizer = wx.BoxSizer(wx.HORIZONTAL)
         x_label = wx.StaticText(dialog, -1, label='X:')
-        x_field = wx.lib.intctrl.IntCtrl(dialog, value=None, min=0, max=100, limited=True, allow_none=True)
+        x_field = wx.lib.intctrl.IntCtrl(
+            dialog, value=None, min=0, max=100, limited=True, allow_none=True
+            )
         x_sizer.Add(x_label, 0, wx.ALL | wx.CENTER, 5)
         x_sizer.Add(x_field, 0, wx.ALL, 5)
 
         y_sizer = wx.BoxSizer(wx.HORIZONTAL)
         y_label = wx.StaticText(dialog, -1, label='Y:')
-        y_field = wx.lib.intctrl.IntCtrl(dialog, value=None, min=0, max=100, limited=True, allow_none=True)
+        y_field = wx.lib.intctrl.IntCtrl(
+            dialog, value=None, min=0, max=100, limited=True, allow_none=True
+            )
         y_sizer.Add(y_label, 0, wx.ALL | wx.CENTER, 5)
         y_sizer.Add(y_field, 0, wx.ALL, 5)
 
@@ -174,6 +214,96 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         dialog.ShowWindowModal()
         return None
 
+    def add_restaurant(self, event):
+        """display the editor gui to add a new restaurant"""
+        add_dialog = EditorGUI(
+            self,
+            self.database,
+            datamap=self.itemDataMap,
+            title='Add Restaurant'
+            )
+        add_dialog.CenterOnParent()
+        add_dialog.ShowWindowModal()
+        return None
+
+    def edit_restaurant(self, event):
+        """display the editor gui to edit a selected restaurant"""
+        index = self.restaurant_list.GetFirstSelected()
+        if index == -1:
+            return None
+        item = self.restaurant_list.GetItem(index)
+        restaurant = item.GetText()
+        edit_dialog = EditorGUI(
+            self,
+            self.database,
+            restaurant,
+            datamap=self.itemDataMap,
+            title='Edit Restaurant'
+            )
+        edit_dialog.CenterOnParent()
+        edit_dialog.ShowWindowModal()
+        return None
+
+    def delete_restaurant(self, event):
+        """delete the selected restaurant"""
+        index = self.restaurant_list.GetFirstSelected()
+        if index == -1:
+            return None
+        selected_name = self.restaurant_list.GetItem(index, 0).GetText()
+        selected_address = self.restaurant_list.GetItem(index, 2).GetText()
+        with shelve.open(self.database) as db:
+            for restaurant in db.values():
+                if selected_address in restaurant.address:
+                    if restaurant.isfranchise:
+                        restaurant.address.remove(selected_address)
+                        db[selected_name] = restaurant
+                    else:
+                        del db[selected_name]
+        self.restaurant_list.DeleteItem(index)
+        self.load()
+        return None
+
+    def reload_database(self, event):
+        self.load()
+        return None
+
+    def admin_logout(self, event):
+        """logout of admin account"""
+        self.SetTitle('Restaurants Customer GUI')
+        self.SetStatusText('Successfully logged out. Currently in customer mode.')
+
+        # ----- disable and remove the admin functions -----
+        self.main_sizer.Hide(self.admin_sizer)
+        self.main_sizer.Remove(self.admin_sizer)
+        self.panel.Layout()
+        self.SetSize((780, 380))
+        return None
+
+    def admin_login(self):
+        self.SetTitle('Restaurants Administrator GUI')
+        self.SetStatusText('Successfully logged in. Administrator privilages granted.')
+
+        # ----- unlock and display the admin functions -----
+        self.admin_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='Administrator Funcitons')
+        add_button = wx.Button(self.panel, wx.ID_ADD)
+        add_button.Bind(wx.EVT_BUTTON, self.add_restaurant)
+        edit_button = wx.Button(self.panel, wx.ID_EDIT)
+        edit_button.Bind(wx.EVT_BUTTON, self.edit_restaurant)
+        delete_button = wx.Button(self.panel, wx.ID_DELETE)
+        delete_button.Bind(wx.EVT_BUTTON, self.delete_restaurant)
+        refresh_button = wx.Button(self.panel, wx.ID_REFRESH)
+        refresh_button.Bind(wx.EVT_BUTTON, self.reload_database)
+        logout_button = wx.Button(self.panel, label='Logout')
+        logout_button.Bind(wx.EVT_BUTTON, self.admin_logout)
+        self.admin_sizer.Add(add_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+        self.admin_sizer.Add(edit_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+        self.admin_sizer.Add(delete_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+        self.admin_sizer.Add(refresh_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+        self.admin_sizer.Add(logout_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+        self.main_sizer.Add(self.admin_sizer, 0, wx.ALL | wx.CENTER, 5)
+        self.panel.Layout()
+        self.SetSize((780, 460))
+        return None
 
 class RestaurantGUI(wx.Dialog):
     def __init__(self, parent, restaurant, database=None):
@@ -773,6 +903,12 @@ class EditorGUI(wx.Dialog):
 
 if __name__ == '__main__':
     app = wx.App()
-    form = EditorGUI(None, database='restaurants', restaurant='Fiery Wok', datamap={}, title='Editor Form')
+    form = EditorGUI(
+        None,
+        database='restaurants',
+        restaurant='Fiery Wok',
+        datamap={},
+        title='Editor Form'
+        )
     form.ShowModal()
     app.MainLoop()
