@@ -1,7 +1,7 @@
 """
 GUI classes
 
-- LoginDialog: dialog box for login
+- LoginDialog: dialog box for admin login
 - CustomerGUI: main customer interface
 - RestaurantGUI: restaurant menu page
 - EditorGUI: restaurant editor interface
