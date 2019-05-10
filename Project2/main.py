@@ -47,17 +47,16 @@ class MyApp(wx.App):
         """handler for about dialog box"""
         info = wx.adv.AboutDialogInfo()
         info.Name = 'Project 2'
-        info.Version = 'v0.9.9'
-        info.Copyright = '(c) 2019 Wenbin Wu\n' + \
-                         'Email: dev@wuwenb.in\n' + \
-                         'Github repo: https://github.com/wenbinwu85/cs370-software-engineering'
+        info.Version = 'v0.9.11'
+        info.Copyright = '(c) 2019 Wenbin Wu\n' 
         info.Description = '' + \
             'Project 2 for CS370 Software Engineering Spring 2019.\n' + \
             'Professor: Dr. Sateesh Mane\n' + \
-            'Objective: To create a GUI that displays restaurant menus.\n' + \
-            'Written in Python3 and wxPython GUI package.\n'
-        info.Developers = ['Wenbin Wu']
-        info.License = 'Free for academic use.'
+            'Written in Python3.7.3 with wxPython4.0.4.\n' + \
+            'Binary built with pyinstaller3.4.\n\n' + \
+            'Email: dev@wuwenb.in\n' + \
+            'Github: https://github.com/wenbinwu85/'
+        info.License = 'Free for academic use.'        
         wx.adv.AboutBox(info)
         return None
 

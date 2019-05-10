@@ -1,5 +1,5 @@
 """
-This module contains classes for building a restaurant object
+This module contain classes for building a restaurant object
 
 Written by Wenbin Wu
 """
@@ -30,7 +30,3 @@ class Restaurant:
         if isinstance(new_menu, Menu):
             self.menus.append(new_menu)
         return None
-
-    def get_info(self):
-        info = (self.name, self.cuisine, self.address, self.hours, self.menus)
-        return info

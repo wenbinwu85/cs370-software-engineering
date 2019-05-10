@@ -55,7 +55,7 @@ class LoginDialog(wx.Dialog):
 
 
 class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
-    """client GUI interface"""
+    """customer GUI interface"""
     def __init__(self, parent, title, size=(780, 380)):
         wx.Frame.__init__(
             self, parent, title=title, size=size,
@@ -105,7 +105,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.CreateStatusBar()
         self.SetStatusText('Currently in Customer mode.')
 
-        # ----- built-in listctrl sorter init -----
+        # ----- wxpython built-in listctrl sorter init -----
         listmixins.ColumnSorterMixin.__init__(self, 5)
         self.load()
 
@@ -117,11 +117,11 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         """load data from database into datamap"""
         self.itemDataMap = {}
         with shelve.open(self.database) as db:
-            for name, restaurant in db.items():
+            for restaurant in db.values():
+                menu_titles = [menu.title for menu in restaurant.menus]
+                menu_titles = ' | '.join(menu_titles)
                 for address in restaurant.address:
-                    menu_titles = [menu.title for menu in restaurant.menus]
-                    menu_titles = ' | '.join(menu_titles)
-                    row = [name, restaurant.cuisine, address, menu_titles, '']
+                    row = [restaurant.name, restaurant.cuisine, address, menu_titles, '']
                     index = len(self.itemDataMap)
                     self.itemDataMap[index] = row
         return None
@@ -139,7 +139,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def load(self):
-        """load the chosen database data"""
+        """load the chosen database data and populate the restaurant list"""
         self.load_database()
         if self.user_location:
             self.calculate_distances(self.user_location)
@@ -157,7 +157,10 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def calculate_distances(self, location):
-        """calcluate distance from user location to each restaurant"""
+        """
+        calculate distance from user location to each restaurant 
+        and update the restaurant list
+        """
         if not self.restaurant_list.GetItemCount():
             return None
         distances = []
@@ -176,7 +179,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def set_location_button_pressed(self, event):
-        """let user set current location and calculate the distance to each restaurant"""
+        """let customer set the current location and calculate the distance to each restaurant"""
         dialog = wx.Dialog(self, title='Enter Your Location')
         dialog.CenterOnParent()
 
@@ -222,7 +225,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def open_restaurant_page(self, event):
-        """Open the menu page for the restaurant"""
+        """open the menu page for the restaurant"""
         index = self.restaurant_list.GetFirstSelected()
         restaurant = self.restaurant_list.GetItem(index).GetText()
         dialog = RestaurantGUI(self, restaurant, self.database)
@@ -231,7 +234,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def add_restaurant(self, event):
-        """display the editor gui to add a new restaurant"""
+        """display the editor GUI to add a new restaurant"""
         add_dialog = EditorGUI(
             self, self.database, datamap=self.itemDataMap, title='Add Restaurant'
             )
@@ -240,12 +243,11 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def edit_restaurant(self, event):
-        """display the editor gui to edit a selected restaurant"""
+        """display the editor GUI to edit a selected restaurant"""
         index = self.restaurant_list.GetFirstSelected()
         if index == -1:
             return None
-        item = self.restaurant_list.GetItem(index)
-        restaurant = item.GetText()
+        restaurant = self.restaurant_list.GetItem(index).GetText()
         edit_dialog = EditorGUI(
             self, self.database, restaurant, datamap=self.itemDataMap, title='Edit Restaurant'
             )
@@ -273,6 +275,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def reload_database(self, event):
+        """reload database and update the restaurant list"""
         self.load()
         return None
 
@@ -289,7 +292,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         return None
 
     def admin_login(self):
-        """Enable the admin functions"""
+        """enable the admin functions"""
         self.SetTitle('Restaurants Administrator GUI')
         self.SetStatusText('Successfully logged in. Administrator functions enabled.')
 
@@ -538,16 +541,16 @@ class EditorGUI(wx.Dialog):
         self.title_field = wx.TextCtrl(self, 0, size=(290, -1))
         self.insert_menu_button = wx.Button(self, wx.ID_OK, label='Insert Menu')
         self.insert_menu_button.Bind(wx.EVT_BUTTON, self.insert_menu_button_pressed)
-        self.modify_menu_button = wx.Button(self, wx.ID_OK, label='Modify Menu')
-        self.modify_menu_button.Bind(wx.EVT_BUTTON, self.modify_menu_button_pressed)
-        self.modify_menu_button.Disable()
+        self.save_menu_button = wx.Button(self, wx.ID_OK, label='Save Menu')
+        self.save_menu_button.Bind(wx.EVT_BUTTON, self.save_menu_button_pressed)
+        self.save_menu_button.Disable()
         self.remove_menu_button = wx.Button(self, wx.ID_OK, label='Remove Menu')
         self.remove_menu_button.Bind(wx.EVT_BUTTON, self.remove_menu_button_pressed)
         self.remove_menu_button.Disable()
         title_sizer.Add(title_label, 0, wx.ALL | wx.EXPAND, 5)
         title_sizer.Add(self.title_field, 0, wx.ALL | wx.EXPAND, 5)
         title_sizer.Add(self.insert_menu_button, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
-        title_sizer.Add(self.modify_menu_button, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
+        title_sizer.Add(self.save_menu_button, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
         title_sizer.Add(self.remove_menu_button, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
 
         # ----- menus list container -----
@@ -565,9 +568,9 @@ class EditorGUI(wx.Dialog):
         preview_button.Bind(wx.EVT_BUTTON, self.preview_button_pressed)
         save_button = wx.Button(self, wx.ID_OK, label='Save')
         save_button.Bind(wx.EVT_BUTTON, self.save_button_pressed)
-        clear_button = wx.Button(self, wx.ID_OK, label='Clear')
+        clear_button = wx.Button(self, wx.ID_CLEAR, label='Clear')
         clear_button.Bind(wx.EVT_BUTTON, self.clear_button_pressed)
-        cancel_button = wx.Button(self, wx.ID_OK, label='Cancel')
+        cancel_button = wx.Button(self, wx.ID_CANCEL, label='Cancel')
         cancel_button.Bind(wx.EVT_BUTTON, self.cancel_button_pressed)
         buttons_sizer3.Add(preview_button, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
         buttons_sizer3.Add(save_button, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
@@ -712,7 +715,8 @@ class EditorGUI(wx.Dialog):
         self.change_menu_buttons(wx.EVT_LIST_ITEM_DESELECTED)
         return None
 
-    def modify_menu_button_pressed(self, event):
+    def save_menu_button_pressed(self, event):
+        """save a modified menu to the menus list"""
         index = self.menu_list.GetFirstSelected()
         title = self.title_field.GetValue()
         num_items = self.item_list.GetItemCount()
@@ -752,10 +756,12 @@ class EditorGUI(wx.Dialog):
         return None
 
     def save_button_pressed(self, event):
-        """Add a new restaurant to the database or update an exisiting restaurant."""
+        """save the restaurant data to the database"""
         restaurant = self.create_restaurant()
         if not restaurant.name or not restaurant.cuisine or not restaurant.address:
-            self.show_error_message('Error. Can not save restaurant with no name, cuisine type or an address.')
+            self.show_error_message(
+                'Error. Can not save restaurant with no name, cuisine type or an address.'
+                )
             return None
         good_hours = True  # assume the hours is entered correctly
         for val in restaurant.hours.values():  # check for bad hours for each day of the week
@@ -826,7 +832,7 @@ class EditorGUI(wx.Dialog):
             self.item_list.Append((item, price))
         self.title_field.SetValue(event.GetText())
         self.insert_menu_button.Disable()
-        self.modify_menu_button.Enable()
+        self.save_menu_button.Enable()
         self.remove_menu_button.Enable()
         return None
 
@@ -854,7 +860,7 @@ class EditorGUI(wx.Dialog):
     def change_menu_buttons(self, event):
         """enable the insert menu button"""
         self.insert_menu_button.Enable()
-        self.modify_menu_button.Disable()
+        self.save_menu_button.Disable()
         self.remove_menu_button.Disable()
         self.item_list.DeleteAllItems()
         self.title_field.Clear()
