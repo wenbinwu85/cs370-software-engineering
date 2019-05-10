@@ -1,6 +1,11 @@
 """
 GUI classes
 
+- LoginDialog: dialog box for login
+- CustomerGUI: main customer interface
+- RestaurantGUI: restaurant menu page
+- EditorGUI: restaurant editor interface
+
 Written by Wenbin Wu
 """
 
