@@ -77,7 +77,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.search_field.ShowSearchButton(True)
         self.search_field.Bind(wx.EVT_TEXT, self.search_restaurant)
         self.location_label = wx.StaticText(
-            self.panel, label='Current Location:  Not Set', 
+            self.panel, label='Customer Location: Not set  ', 
             size=(200, -1), style=wx.ALL | wx.EXPAND
             )
         self.set_location_button = wx.Button(self.panel, label='Location')
@@ -302,33 +302,31 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         if dialog.ShowModal() == wx.ID_OK:
             username = dialog.username_field.GetValue()
             password = dialog.password_field.GetValue()
-            if not (username, password) == ADMIN_ACCOUNT:
-                return None
+            if (username, password) == ADMIN_ACCOUNT:
+                self.login_button.Disable()
+                self.SetTitle('Restaurants Administrator GUI')
+                self.SetStatusText('Successfully logged in. Administrator functions enabled.')
 
-        self.login_button.Disable()
-        self.SetTitle('Restaurants Administrator GUI')
-        self.SetStatusText('Successfully logged in. Administrator functions enabled.')
-
-        # ----- unlock and display the admin functions -----
-        self.admin_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='Administrator Funcitons')
-        add_button = wx.Button(self.panel, wx.ID_ADD)
-        add_button.Bind(wx.EVT_BUTTON, self.add_restaurant)
-        edit_button = wx.Button(self.panel, wx.ID_EDIT)
-        edit_button.Bind(wx.EVT_BUTTON, self.edit_restaurant)
-        delete_button = wx.Button(self.panel, wx.ID_DELETE)
-        delete_button.Bind(wx.EVT_BUTTON, self.delete_restaurant)
-        refresh_button = wx.Button(self.panel, wx.ID_REFRESH)
-        refresh_button.Bind(wx.EVT_BUTTON, self.reload_database)
-        logout_button = wx.Button(self.panel, label='Logout')
-        logout_button.Bind(wx.EVT_BUTTON, self.admin_logout)
-        self.admin_sizer.Add(add_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
-        self.admin_sizer.Add(edit_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
-        self.admin_sizer.Add(delete_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
-        self.admin_sizer.Add(refresh_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
-        self.admin_sizer.Add(logout_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
-        self.main_sizer.Add(self.admin_sizer, 0, wx.ALL | wx.CENTER, 5)
-        self.panel.Layout()
-        self.SetSize((780, 420))
+                # ----- unlock and display the admin functions -----
+                self.admin_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='Administrator Funcitons')
+                add_button = wx.Button(self.panel, wx.ID_ADD)
+                add_button.Bind(wx.EVT_BUTTON, self.add_restaurant)
+                edit_button = wx.Button(self.panel, wx.ID_EDIT)
+                edit_button.Bind(wx.EVT_BUTTON, self.edit_restaurant)
+                delete_button = wx.Button(self.panel, wx.ID_DELETE)
+                delete_button.Bind(wx.EVT_BUTTON, self.delete_restaurant)
+                refresh_button = wx.Button(self.panel, wx.ID_REFRESH)
+                refresh_button.Bind(wx.EVT_BUTTON, self.reload_database)
+                logout_button = wx.Button(self.panel, label='Logout')
+                logout_button.Bind(wx.EVT_BUTTON, self.admin_logout)
+                self.admin_sizer.Add(add_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+                self.admin_sizer.Add(edit_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+                self.admin_sizer.Add(delete_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+                self.admin_sizer.Add(refresh_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+                self.admin_sizer.Add(logout_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
+                self.main_sizer.Add(self.admin_sizer, 0, wx.ALL | wx.CENTER, 5)
+                self.panel.Layout()
+                self.SetSize((780, 420))
         return None
 
 

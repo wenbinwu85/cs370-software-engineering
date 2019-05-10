@@ -33,7 +33,7 @@ class MyApp(wx.App):
         """handler for about dialog box"""
         info = wx.adv.AboutDialogInfo()
         info.Name = 'Project 2'
-        info.Version = 'v0.9.12'
+        info.Version = 'v1.0.0'
         info.Copyright = '(c) 2019 Wenbin Wu\n' 
         info.Description = '' + \
             'Project 2 for CS370 Software Engineering Spring 2019.\n' + \
