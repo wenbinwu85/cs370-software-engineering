@@ -16,6 +16,7 @@ import wx.lib.intctrl
 import wx.lib.mixins.listctrl as listmixins
 from restaurant import *
 
+ADMIN_ACCOUNT = ('admin', 'admin')  # hardcoded admin account
 
 class LoginDialog(wx.Dialog):
     def __init__(self, *args, **kw):
@@ -56,14 +57,13 @@ class LoginDialog(wx.Dialog):
 
 class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
     """customer GUI interface"""
-    def __init__(self, parent, title, size=(780, 380)):
+    def __init__(self, parent, title, size=(780, 360)):
         wx.Frame.__init__(
             self, parent, title=title, size=size,
             style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
             )
         self.CenterOnScreen()
-        if wx.Platform == '__WXMAC__':
-            self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
+        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
         self.panel = wx.Panel(self)
 
         self.database = 'restaurants'
@@ -77,13 +77,17 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.search_field.ShowSearchButton(True)
         self.search_field.Bind(wx.EVT_TEXT, self.search_restaurant)
         self.location_label = wx.StaticText(
-            self.panel, label='Current Location:  Not Set', size=(200, -1)
+            self.panel, label='Current Location:  Not Set', 
+            size=(200, -1), style=wx.ALL | wx.EXPAND
             )
-        self.set_location_button = wx.Button(self.panel, label='Set Location')
+        self.set_location_button = wx.Button(self.panel, label='Location')
         self.set_location_button.Bind(wx.EVT_BUTTON, self.set_location_button_pressed)
+        self.login_button = wx.Button(self.panel, label='Login')
+        self.login_button.Bind(wx.EVT_BUTTON, self.admin_login)
         search_sizer.Add(self.search_field, 0, wx.ALL | wx.CENTER, 5)
         search_sizer.Add(self.location_label, 0 , wx.ALL | wx.EXPAND, 5)
         search_sizer.Add(self.set_location_button, 0, wx.ALL | wx.EXPAND, 5)
+        search_sizer.Add(self.login_button, 0, wx.ALL | wx.EXPAND, 5)
 
         # ----- restaurant list container -----
         self.restaurant_list = wx.ListCtrl(self.panel, size=(780, 250), style=wx.LC_REPORT)
@@ -281,6 +285,7 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
 
     def admin_logout(self, event):
         """logout of admin account and disable the admin functions"""
+        self.login_button.Enable()
         self.SetTitle('Restaurants Customer GUI')
         self.SetStatusText('Successfully logged out. Currently in customer mode.')
 
@@ -288,11 +293,19 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.main_sizer.Hide(self.admin_sizer)
         self.main_sizer.Remove(self.admin_sizer)
         self.panel.Layout()
-        self.SetSize((780, 380))
+        self.SetSize((780, 360))
         return None
 
-    def admin_login(self):
+    def admin_login(self, event):
         """enable the admin functions"""
+        dialog = LoginDialog(self, title='Administrator Login')
+        if dialog.ShowModal() == wx.ID_OK:
+            username = dialog.username_field.GetValue()
+            password = dialog.password_field.GetValue()
+            if not (username, password) == ADMIN_ACCOUNT:
+                return None
+
+        self.login_button.Disable()
         self.SetTitle('Restaurants Administrator GUI')
         self.SetStatusText('Successfully logged in. Administrator functions enabled.')
 
@@ -315,17 +328,14 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.admin_sizer.Add(logout_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
         self.main_sizer.Add(self.admin_sizer, 0, wx.ALL | wx.CENTER, 5)
         self.panel.Layout()
-        self.SetSize((780, 460))
+        self.SetSize((780, 420))
         return None
 
 
 class RestaurantGUI(wx.Dialog):
     def __init__(self, parent, restaurant, database=None):
         wx.Dialog.__init__(self, parent=parent)
-        if wx.Platform == '__WXMSW__':
-            self.SetFont(wx.Font(11, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Courier New'))
-        elif wx.Platform == '__WXMAC__':
-            self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
+        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
         if database:
             with shelve.open(database) as db:
                 restaurant = db[restaurant]
@@ -389,10 +399,7 @@ class EditorGUI(wx.Dialog):
             self, parent, title=title, size=size,
             style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
             )
-        if wx.Platform == '__WXMSW__':
-            self.SetFont(wx.Font(11, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Courier New'))
-        elif wx.Platform == '__WXMAC__':
-            self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
+        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
         self.restaurant = restaurant
         self.database = database
         self.occupied_addresses = {i[2] for i in datamap.values()}
