@@ -63,7 +63,10 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
             style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
             )
         self.CenterOnScreen()
-        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
+        if wx.Platform == '__WXMSW__':
+            self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'courier'))
+        else:
+            self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
         self.panel = wx.Panel(self)
 
         self.database = 'restaurants'
@@ -326,14 +329,20 @@ class CustomerGUI(wx.Frame, listmixins.ColumnSorterMixin):
                 self.admin_sizer.Add(logout_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
                 self.main_sizer.Add(self.admin_sizer, 0, wx.ALL | wx.CENTER, 5)
                 self.panel.Layout()
-                self.SetSize((780, 420))
+                if wx.Platform == '__WXMSW__':
+                    self.SetSize((780, 480))
+                else:
+                    self.SetSize((780, 420))
         return None
 
 
 class RestaurantGUI(wx.Dialog):
     def __init__(self, parent, restaurant, database=None):
         wx.Dialog.__init__(self, parent=parent)
-        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
+        if wx.Platform == '__WXMSW__':
+            self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'courier'))
+        else:
+            self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
         if database:
             with shelve.open(database) as db:
                 restaurant = db[restaurant]
@@ -397,7 +406,10 @@ class EditorGUI(wx.Dialog):
             self, parent, title=title, size=size,
             style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
             )
-        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
+        if wx.Platform == '__WXMSW__':
+            self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'courier'))
+        else:
+            self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
         self.restaurant = restaurant
         self.database = database
         self.occupied_addresses = {i[2] for i in datamap.values()}
