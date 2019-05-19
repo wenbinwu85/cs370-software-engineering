@@ -4,10 +4,9 @@ main program file
 Written by Wenbin Wu
 """
 
-import shelve
 import wx
 import wx.adv
-from gui import LoginDialog, CustomerGUI, RestaurantGUI, EditorGUI
+from gui import CustomerGUI
 
 
 class MyApp(wx.App):
